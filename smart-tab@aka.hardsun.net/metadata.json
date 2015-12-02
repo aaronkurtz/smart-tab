@@ -1,0 +1,11 @@
+{
+"extension-id": "smart-tab",
+"uuid" : "smart-tab@aka.hardsun.net",
+"settings-schema": "org.gnome.shell.extensions.alternate-tab",
+"gettext-domain": "gnome-shell-extensions",
+"name" : "Smart Tab",
+"shell-version" : [
+  "3.14"
+],
+"description" : "Switch tabs only on current workspace and monitor"
+}
