@@ -18,16 +18,15 @@ function setKeybinding(name, func) {
 }
 
 function is_on_current_monitor(tab) {
-    let current = global.screen.get_current_monitor() 
-    return (current == tab.get_monitor())
+    return (this == tab.get_monitor());
 }
 
 function _patchWindowList() {
     return function() {
     let workspace = this._settings.get_boolean('current-workspace-only') ? global.screen.get_active_workspace() : null;
     let tab_list = global.display.get_tab_list(Meta.TabList.NORMAL, workspace);
-    return tab_list.filter(is_on_current_monitor);
-    }
+    return tab_list.filter(is_on_current_monitor, global.screen.get_current_monitor());
+    };
 }
 
 function enable() {
