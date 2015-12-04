@@ -9,6 +9,7 @@ const AltTab = imports.ui.altTab;
 const Main = imports.ui.main;
 
 let injections = {};
+let app_injections = {};
 
 function init(metadata) {
 }
@@ -29,10 +30,18 @@ function _patchWindowList() {
     };
 }
 
+function _patchInitialSelection() {
+    return function(backward, binding) {
+        this._select(0);
+    };
+}
+
 function enable() {
     injections['_keyPressHandler'] = AltTab.WindowSwitcherPopup.prototype._keyPressHandler;
     injections['_getWindowList'] = AltTab.WindowSwitcherPopup.prototype._getWindowList;
+    app_injections['_initialSelection'] = AltTab.AppSwitcherPopup.prototype._initialSelection;
     AltTab.WindowSwitcherPopup.prototype._getWindowList = _patchWindowList();
+    AltTab.AppSwitcherPopup.prototype._initialSelection= _patchInitialSelection();
     AltTab.WindowSwitcherPopup.prototype._keyPressHandler = function(keysym, action) {
         switch(action) {
             case Meta.KeyBindingAction.SWITCH_APPLICATIONS:
@@ -48,19 +57,17 @@ function enable() {
     };
 
     setKeybinding('switch-applications', Lang.bind(Main.wm, Main.wm._startWindowSwitcher));
-    setKeybinding('switch-group', Lang.bind(Main.wm, Main.wm._startWindowSwitcher));
     setKeybinding('switch-applications-backward', Lang.bind(Main.wm, Main.wm._startWindowSwitcher));
-    setKeybinding('switch-group-backward', Lang.bind(Main.wm, Main.wm._startWindowSwitcher));
 }
 
 function disable() {
     var prop;
 
     setKeybinding('switch-applications', Lang.bind(Main.wm, Main.wm._startAppSwitcher));
-    setKeybinding('switch-group', Lang.bind(Main.wm, Main.wm._startAppSwitcher));
     setKeybinding('switch-applications-backward', Lang.bind(Main.wm, Main.wm._startAppSwitcher));
-    setKeybinding('switch-group-backward', Lang.bind(Main.wm, Main.wm._startAppSwitcher));
 
     for (prop in injections)
         AltTab.WindowSwitcherPopup.prototype[prop] = injections[prop];
+    for (prop in app_injections)
+        AltTab.AppSwitcherPopup.prototype[prop] = app_injections[prop];
 }
